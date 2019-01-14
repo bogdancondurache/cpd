@@ -79,8 +79,6 @@ var app = new Vue({
                 var element = document.getElementById('chat-message');
                 element.scrollTop = element.scrollHeight; 
             }
-    
-    
             // Send request
             request.send(); 
         }
@@ -148,8 +146,7 @@ var app = new Vue({
                 var data = JSON.parse(this.response);
                 Materialize.toast(data.message, 2000);
             }
-           
-
+           location.reload()
         },
 
         gravatarURL: function(email) {
