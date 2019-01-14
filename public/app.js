@@ -6,7 +6,7 @@ var app = new Vue({
         newMsg: '', // Holds new messages to be sent to the server
         newRoom: '', // Holds new room to be sent to the server
         chatContent: '', // A running list of chat messages displayed on the screen
-        chatRoom: '', // A running list of chat room displayed on the screen
+        chatRoom: [], // A running list of chat room displayed on the screen LE: now actually a list
         email: null, // Email address used for grabbing an avatar
         username: null, // Our username
         joined: "true" == sessionStorage.getItem("joined"), // True if email and username have been filled in
@@ -17,7 +17,7 @@ var app = new Vue({
          var listentoroom = function(id) {
             this.ws = new WebSocket('ws://' + window.location.host + '/ws?room=' + id);
              console.log(ws)
-    
+
              this.ws.addEventListener('message', function(e) {
                  var msg = JSON.parse(e.data);
                  self.chatContent += '<div class="chip">'
@@ -25,66 +25,64 @@ var app = new Vue({
                          + msg.user
                      + '</div>'
                      + emojione.toImage(msg.message) +  '<div style="text-color:gray;"> &nbsp;' +  msg.time  + '</div>' + '<br/>'; // Parse emojis
-     
+
                  var element = document.getElementById('chat-messages');
                  element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
              });
          };
         var self = this;
- 
+
         var rid = sessionStorage.getItem("roomId")
         if (rid != null && rid != "")
             {
                 listentoroom(rid);
             }
-       
+
          if(sessionStorage.getItem("inRoom") != "true" & sessionStorage.getItem("joined") == "true") {
            var request = new XMLHttpRequest();
 
             // Open a new connection, using the GET request on the URL endpoint
             request.open('GET', 'http://localhost:8000/room', true);
-    
+
             request.onload = function () {
                 var data = JSON.parse(this.response);
                 data.forEach(room => {
                     if (room.name != " ")
                     //THIS SHIT IS NOT WORKING
-                    self.chatRoom += '<button style="width:100%;" class="button-primary" id="'+ room.id + '" v-on:click="sessionStorage.setItem("inRoom", true); sessionStorage.setItem("roomId", id);">'
-                    + room.name
-                    + '</button>';
+                    self.chatRoom.push({id: room.id, name: room.name});
                     //DADA AICI
-                });  
+                });
                 var element = document.getElementById('chat-room');
-                element.scrollTop = element.scrollHeight; 
+                element.scrollTop = element.scrollHeight;
             }
-            
+
             // Send request
-            request.send(); 
+            request.send();
         //Request for all the rooms
         } else if (sessionStorage.getItem("inRoom") == "true" & sessionStorage.getItem("joined") == "true"){
             var request = new XMLHttpRequest();
 
             // Open a new connection, using the GET request on the URL endpoint
             request.open('GET', 'http://localhost:8000/message?room=' + sessionStorage.getItem("roomId"), true);
-    
+
             request.onload = function () {
                 var data = JSON.parse(this.response);
                 data.forEach(message => {
-                    
+
                     self.chatContent += '<div class="chip">'
                         + '<img src="' + self.gravatarURL(message.user) + '">' // Avatar
-                        + message.user 
+                        + message.user
                     + '</div>'
                     + emojione.toImage(message.message) + '<div style="text-color:gray;"> &nbsp;' +  message.time  + '</div>' + '<br/>'; // Parse emojis
-    
-                });  
+
+                });
                 var element = document.getElementById('chat-message');
-                element.scrollTop = element.scrollHeight; 
+                element.scrollTop = element.scrollHeight;
             }
             // Send request
-            request.send(); 
+            request.send();
         }
-       
+
     },
 
     methods: {
@@ -140,9 +138,9 @@ var app = new Vue({
             // Open a new connection, using the GET request on the URL endpoint
             request.open('GET', 'http://localhost:8000/login?username='+this.username + '&email=' + this.email, true);
             request.send();
-            sessionStorage.setItem("joined", true)  
-            sessionStorage.setItem("username", this.username)  
-            this.joined = true; 
+            sessionStorage.setItem("joined", true)
+            sessionStorage.setItem("username", this.username)
+            this.joined = true;
             this.username;
             request.onload = function () {
                 var data = JSON.parse(this.response);

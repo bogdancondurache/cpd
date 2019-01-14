@@ -31,7 +31,10 @@
     <div class="row" v-if="joined && !inRoom" style="width:100%;">
         <div class="col s12" style="width:100%;">
             <div id="chat-room-parent" class="card horizontal" style="width:100%;">
-                <div id="chat-room" class="card-content" v-html="chatRoom" style="width:100%;" >
+                <div id="chat-room" class="card-content" style="width:100%;">
+                    <button v-for="room in chatRooms" style="width:100%;" class="button-primary" id="{{room.id}}" v-on:click="sessionStorage.setItem('inRoom', true); sessionStorage.setItem('roomId', room.id);">
+                        {{room.name}}
+                    </button>
                 </div>
             </div>
         </div>
