@@ -48,7 +48,7 @@ var app = new Vue({
                 var data = JSON.parse(this.response);
                 data.forEach(room => {
                     if (room.name != " ")
-                    self.chatRoom += '<button style="width:100%;" class="button-primary" id="'+ room.id + '" v-on:click="sessionStorage.setItem("inRoom", true); sessionStorage.setItem("roomId", i);">'
+                    self.chatRoom += '<button style="width:100%;" class="button-primary" id="'+ room.id + '" v-on:click="sessionStorage.setItem("inRoom", true); sessionStorage.setItem("roomId", id);">'
                     + room.name
                     + '</button>';
                 });  
